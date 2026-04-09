@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Prompt — Decode the AI Workplace</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700;800;900&family=Inter:wght@400;500&family=Fira+Code:wght@400&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:#F9F6F0;font-family:'Inter',sans-serif;color:#26334A;overflow-x:hidden}
+
+nav{position:sticky;top:0;z-index:100;background:#26334A;padding:0 60px;height:64px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #FFCC00}
+.nav-logo{display:flex;align-items:center;gap:12px}
+.nav-circle{width:36px;height:36px;border-radius:50%;border:2px solid #FFCC00;display:flex;align-items:center;justify-content:center}
+.cursor-svg{width:16px;height:16px}
+.nav-wordmark{font-family:'Poppins',sans-serif;font-weight:800;font-size:15px;color:#F9F6F0;letter-spacing:2px}
+.nav-links{display:flex;align-items:center;gap:32px}
+.nav-links a{color:rgba(249,246,240,0.6);font-size:13px;text-decoration:none;letter-spacing:0.5px;transition:color 0.2s}
+.nav-links a:hover{color:#FFCC00}
+.nav-cta{background:#FFCC00;color:#26334A;font-family:'Poppins',sans-serif;font-weight:800;font-size:12px;letter-spacing:1px;padding:10px 22px;border-radius:6px;text-decoration:none;transition:opacity 0.2s}
+.nav-cta:hover{opacity:0.9}
+
+.hero{background:#26334A;min-height:92vh;display:flex;align-items:center;padding:80px 60px;position:relative;overflow:hidden}
+.hero-bg-text{position:absolute;right:-40px;top:50%;transform:translateY(-50%);font-family:'Poppins',sans-serif;font-weight:900;font-size:280px;color:rgba(255,204,0,0.04);line-height:1;pointer-events:none;white-space:nowrap}
+.hero-content{max-width:680px;position:relative;z-index:1}
+.hero-eyebrow{font-family:'Fira Code',monospace;color:#14B8A6;font-size:13px;letter-spacing:2px;margin-bottom:28px;display:flex;align-items:center;gap:10px}
+.hero-eyebrow::before{content:'';width:32px;height:2px;background:#14B8A6}
+.hero h1{font-family:'Poppins',sans-serif;font-weight:900;font-size:72px;line-height:0.95;text-transform:uppercase;letter-spacing:-1px;color:#F9F6F0;margin-bottom:32px}
+.hero h1 .yellow{color:#FFCC00}
+.hero h1 .outline{-webkit-text-stroke:2px #F9F6F0;color:transparent}
+.hero-sub{font-size:18px;color:rgba(249,246,240,0.6);line-height:1.7;max-width:520px;margin-bottom:48px}
+.hero-sub strong{color:#F9F6F0}
+.hero-actions{display:flex;align-items:center;gap:20px}
+.btn-primary{background:#FFCC00;color:#26334A;font-family:'Poppins',sans-serif;font-weight:800;font-size:14px;letter-spacing:1px;padding:16px 36px;border-radius:8px;text-decoration:none;display:inline-block;transition:transform 0.2s}
+.btn-primary:hover{transform:translateY(-2px)}
+.btn-ghost{color:#F9F6F0;font-size:14px;text-decoration:none;display:flex;align-items:center;gap:8px;opacity:0.6;transition:opacity 0.2s}
+.btn-ghost:hover{opacity:1}
+.hero-stat-row{display:flex;gap:48px;margin-top:64px;padding-top:48px;border-top:1px solid rgba(249,246,240,0.08)}
+.hero-stat-num{font-family:'Poppins',sans-serif;font-weight:900;font-size:36px;color:#FFCC00;line-height:1}
+.hero-stat-label{font-size:13px;color:rgba(249,246,240,0.4);margin-top:4px}
+
+.section{padding:100px 60px}
+.section-inner{max-width:1080px;margin:0 auto}
+.eyebrow{font-family:'Fira Code',monospace;color:#14B8A6;font-size:12px;letter-spacing:2px;margin-bottom:12px}
+.section-h{font-family:'Poppins',sans-serif;font-weight:900;font-size:52px;text-transform:uppercase;letter-spacing:-0.5px;line-height:1;color:#26334A;margin-bottom:20px}
+.section-h .yellow{color:#FFCC00}
+.section-sub{font-size:17px;color:#64748B;line-height:1.7;max-width:560px;margin-bottom:60px}
+
+.problem-section{background:#26334A}
+.problem-section .section-h{color:#F9F6F0}
+.problem-section .section-sub{color:rgba(249,246,240,0.5)}
+.problem-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:#FFCC00}
+.problem-card{background:#26334A;padding:40px;position:relative}
+.p-num{font-family:'Poppins',sans-serif;font-weight:900;font-size:64px;color:rgba(255,204,0,0.08);position:absolute;top:24px;right:24px;line-height:1}
+.p-icon{width:40px;height:40px;border-radius:8px;background:rgba(255,204,0,0.08);display:flex;align-items:center;justify-content:center;margin-bottom:20px}
+.p-title{font-family:'Poppins',sans-serif;font-weight:800;font-size:18px;color:#F9F6F0;margin-bottom:12px;text-transform:uppercase;letter-spacing:0.5px}
+.p-body{font-size:14px;color:rgba(249,246,240,0.5);line-height:1.7}
+
+.what-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.what-card{background:#fff;border-radius:12px;border:1px solid rgba(38,51,74,0.08);padding:36px;position:relative;overflow:hidden}
+.what-card::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:#FFCC00}
+.what-card.teal::after{background:#14B8A6}
+.w-label{font-family:'Fira Code',monospace;font-size:11px;color:#14B8A6;letter-spacing:1px;margin-bottom:12px}
+.w-title{font-family:'Poppins',sans-serif;font-weight:800;font-size:20px;color:#26334A;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:14px}
+.w-body{font-size:14px;color:#64748B;line-height:1.7;margin-bottom:20px}
+.w-items{list-style:none}
+.w-items li{font-size:13px;color:#26334A;padding:8px 0;border-bottom:1px solid rgba(38,51,74,0.06);display:flex;align-items:center;gap:10px}
+.w-items li::before{content:'';width:6px;height:6px;border-radius:50%;background:#FFCC00;flex-shrink:0}
+.w-items li:last-child{border-bottom:none}
+
+.pricing-section{background:#26334A}
+.pricing-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:800px}
+.price-card{border-radius:12px;padding:40px;position:relative}
+.price-card.base{background:rgba(249,246,240,0.05);border:1px solid rgba(249,246,240,0.1)}
+.price-card.pro{background:#FFCC00}
+.price-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:#14B8A6;color:#fff;font-family:'Fira Code',monospace;font-size:10px;padding:4px 14px;border-radius:20px;letter-spacing:1px;white-space:nowrap}
+.price-name{font-family:'Poppins',sans-serif;font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:2px;margin-bottom:20px}
+.price-card.base .price-name{color:rgba(249,246,240,0.5)}
+.price-card.pro .price-name{color:#26334A}
+.price-amount{font-family:'Poppins',sans-serif;font-weight:900;font-size:56px;line-height:1;margin-bottom:4px}
+.price-card.base .price-amount{color:#F9F6F0}
+.price-card.pro .price-amount{color:#26334A}
+.price-period{font-size:13px;margin-bottom:32px}
+.price-card.base .price-period{color:rgba(249,246,240,0.4)}
+.price-card.pro .price-period{color:rgba(38,51,74,0.6)}
+.price-feature{font-size:14px;padding:10px 0;border-bottom:1px solid;display:flex;align-items:center;gap:10px}
+.price-card.base .price-feature{color:rgba(249,246,240,0.7);border-bottom-color:rgba(249,246,240,0.06)}
+.price-card.pro .price-feature{color:#26334A;border-bottom-color:rgba(38,51,74,0.1)}
+.price-check{font-size:14px;flex-shrink:0}
+.price-card.base .price-check{color:#14B8A6}
+.price-card.pro .price-check{color:#26334A}
+.price-btn{display:block;text-align:center;margin-top:32px;padding:14px;border-radius:8px;font-family:'Poppins',sans-serif;font-weight:800;font-size:13px;letter-spacing:1px;text-decoration:none;transition:opacity 0.2s}
+.price-card.base .price-btn{background:#FFCC00;color:#26334A}
+.price-card.pro .price-btn{background:#26334A;color:#FFCC00}
+.price-btn:hover{opacity:0.9}
+
+.social-proof{background:#F9F6F0;padding:80px 60px}
+.sp-inner{max-width:1080px;margin:0 auto}
+.testimonials{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:48px}
+.testi-card{background:#fff;border-radius:12px;border:1px solid rgba(38,51,74,0.07);padding:28px}
+.testi-stars{color:#FFCC00;font-size:14px;margin-bottom:16px;letter-spacing:2px}
+.testi-quote{font-size:14px;color:#26334A;line-height:1.7;margin-bottom:20px;font-style:italic}
+.testi-name{font-size:13px;font-weight:600;color:#26334A}
+.testi-role{font-size:12px;color:#64748B;margin-top:2px}
+
+.cta-section{background:#FFCC00;padding:100px 60px;text-align:center}
+.cta-h{font-family:'Poppins',sans-serif;font-weight:900;font-size:56px;text-transform:uppercase;color:#26334A;line-height:1;margin-bottom:20px}
+.cta-sub{font-size:17px;color:rgba(38,51,74,0.6);margin-bottom:48px}
+.cta-btn{background:#26334A;color:#FFCC00;font-family:'Poppins',sans-serif;font-weight:800;font-size:15px;letter-spacing:1px;padding:20px 48px;border-radius:8px;text-decoration:none;display:inline-block;transition:transform 0.2s}
+.cta-btn:hover{transform:translateY(-2px)}
+.cta-note{font-size:13px;color:rgba(38,51,74,0.4);margin-top:16px;font-family:'Fira Code',monospace}
+
+footer{background:#26334A;padding:40px 60px;display:flex;align-items:center;justify-content:space-between;border-top:2px solid #FFCC00}
+.footer-left{font-family:'Poppins',sans-serif;font-weight:800;font-size:14px;color:#F9F6F0;letter-spacing:2px}
+.footer-tag{font-family:'Fira Code',monospace;font-size:11px;color:#14B8A6;margin-top:4px;letter-spacing:1px}
+.footer-right{font-size:12px;color:rgba(249,246,240,0.3)}
+
+@media(max-width:768px){
+  nav{padding:0 24px}
+  .nav-links{display:none}
+  .hero{padding:60px 24px;min-height:auto}
+  .hero h1{font-size:48px}
+  .hero-bg-text{display:none}
+  .hero-stat-row{gap:24px}
+  .section{padding:60px 24px}
+  .problem-grid{grid-template-columns:1fr}
+  .what-grid{grid-template-columns:1fr}
+  .pricing-grid{grid-template-columns:1fr}
+  .testimonials{grid-template-columns:1fr}
+  .cta-h{font-size:36px}
+  footer{flex-direction:column;gap:16px;text-align:center;padding:32px 24px}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">
+    <div class="nav-circle">
+      <svg class="cursor-svg" viewBox="0 0 16 16" fill="none">
+        <path d="M3 2L13 8L8 9.5L6 14L3 2Z" fill="#FFCC00"/>
+      </svg>
+    </div>
+    <span class="nav-wordmark">THE PROMPT</span>
+  </div>
+  <div class="nav-links">
+    <a href="#what">What's Inside</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#community">Community</a>
+  </div>
+  <a href="https://whop.com" class="nav-cta">JOIN NOW →</a>
+</nav>
+
+<section class="hero">
+  <div class="hero-bg-text">AI</div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Decode the AI Workplace</div>
+    <h1>
+      The AI<br>
+      <span class="yellow">edge</span><br>
+      <span class="outline">you need.</span>
+    </h1>
+    <p class="hero-sub">The job market changed. <strong>AI fluency is now the minimum bar.</strong> We give you the prompts, playbooks, and community to clear it — and land roles that pay more.</p>
+    <div class="hero-actions">
+      <a href="https://whop.com" class="btn-primary">GET ACCESS →</a>
+      <a href="#what" class="btn-ghost">See what's inside ↓</a>
+    </div>
+    <div class="hero-stat-row">
+      <div>
+        <div class="hero-stat-num">50+</div>
+        <div class="hero-stat-label">Interview Q&As</div>
+      </div>
+      <div>
+        <div class="hero-stat-num">30+</div>
+        <div class="hero-stat-label">Ready-to-Use Prompts</div>
+      </div>
+      <div>
+        <div class="hero-stat-num">$20</div>
+        <div class="hero-stat-label">Per Month</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section problem-section">
+  <div class="section-inner">
+    <div class="eyebrow" style="color:#FFCC00">// the problem</div>
+    <h2 class="section-h" style="color:#F9F6F0;margin-bottom:60px">Three reasons<br>candidates <span class="yellow">lose</span> in 2026</h2>
+    <div class="problem-grid">
+      <div class="problem-card">
+        <div class="p-num">01</div>
+        <div class="p-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="2" y="5" width="16" height="12" rx="2" stroke="#FFCC00" stroke-width="1.5"/><path d="M6 5V4a4 4 0 018 0v1" stroke="#FFCC00" stroke-width="1.5"/></svg>
+        </div>
+        <div class="p-title">They don't speak AI</div>
+        <div class="p-body">Hiring managers now expect every candidate to demonstrate practical AI fluency. "I've heard of ChatGPT" doesn't cut it anymore. You need to show how you use it to get real results.</div>
+      </div>
+      <div class="problem-card">
+        <div class="p-num">02</div>
+        <div class="p-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="#FFCC00" stroke-width="1.5"/><path d="M10 6v4l3 2" stroke="#FFCC00" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <div class="p-title">They're using 2022 tactics</div>
+        <div class="p-body">Spray-and-pray applications, generic cover letters, and unprepared interviews. The candidates beating you are using AI to research, tailor, and prepare at a level that was impossible 3 years ago.</div>
+      </div>
+      <div class="problem-card">
+        <div class="p-num">03</div>
+        <div class="p-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2L12.5 7.5H18L13.5 11L15.5 17L10 13.5L4.5 17L6.5 11L2 7.5H7.5L10 2Z" stroke="#FFCC00" stroke-width="1.5"/></svg>
+        </div>
+        <div class="p-title">They leave money on the table</div>
+        <div class="p-body">Over 80% of employers expect negotiation. Candidates who don't negotiate — or negotiate without market data behind them — lose thousands of dollars on their first offer. Every time.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="what">
+  <div class="section-inner">
+    <div class="eyebrow">// what's inside</div>
+    <h2 class="section-h">Everything you need.<br><span class="yellow">Nothing you don't.</span></h2>
+    <p class="section-sub">A focused, practical toolkit built for the 2026 job market — not a bloated course you'll never finish.</p>
+    <div class="what-grid">
+      <div class="what-card">
+        <div class="w-label">// resource 01</div>
+        <div class="w-title">AI Interview Question Bank</div>
+        <div class="w-body">50 AI workplace interview questions with full model answers across 5 domains. For candidates and hiring managers.</div>
+        <ul class="w-items">
+          <li>Fundamentals, Tools, Prompting</li>
+          <li>Strategy & Leadership questions</li>
+          <li>Advanced 2026 Trends section</li>
+          <li>Model answers for every question</li>
+        </ul>
+      </div>
+      <div class="what-card teal">
+        <div class="w-label">// resource 02</div>
+        <div class="w-title">Master Prompt Library</div>
+        <div class="w-body">30+ copy-paste prompts covering every stage of your job search — resume to offer letter.</div>
+        <ul class="w-items">
+          <li>Resume audit & bullet transformer</li>
+          <li>Job description decoder</li>
+          <li>Mock interviewer & STAR stories</li>
+          <li>Salary research & negotiation</li>
+        </ul>
+      </div>
+      <div class="what-card teal">
+        <div class="w-label">// resource 03</div>
+        <div class="w-title">AI-Optimized Resume Template</div>
+        <div class="w-body">Built for ATS systems and human readers. AI tips embedded in every section so you know exactly what to optimize.</div>
+        <ul class="w-items">
+          <li>ATS keyword strategy built in</li>
+          <li>CAR framework for every bullet</li>
+          <li>Section-by-section guidance</li>
+          <li>Real example filled in</li>
+        </ul>
+      </div>
+      <div class="what-card">
+        <div class="w-label">// resource 04</div>
+        <div class="w-title">LinkedIn Blueprint + Negotiation Scripts</div>
+        <div class="w-body">A complete LinkedIn strategy for new grads and career switchers, plus email and verbal negotiation templates.</div>
+        <ul class="w-items">
+          <li>Headline formula that gets clicks</li>
+          <li>About section 3-paragraph structure</li>
+          <li>Counter-offer email template</li>
+          <li>Phone negotiation script</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section pricing-section" id="pricing">
+  <div class="section-inner">
+    <div class="eyebrow" style="color:#FFCC00">// pricing</div>
+    <h2 class="section-h" style="color:#F9F6F0;margin-bottom:16px">Simple.<br><span class="yellow">No gotchas.</span></h2>
+    <p class="section-sub" style="margin-bottom:60px">Cancel any time. Keep everything you've downloaded.</p>
+    <div class="pricing-grid">
+      <div class="price-card base">
+        <div class="price-name">Community Access</div>
+        <div class="price-amount">$20</div>
+        <div class="price-period">/ month</div>
+        <div class="price-feature"><span class="price-check">✓</span> All downloadable resources</div>
+        <div class="price-feature"><span class="price-check">✓</span> Weekly prompt & tip drops</div>
+        <div class="price-feature"><span class="price-check">✓</span> New resource every month</div>
+        <div class="price-feature"><span class="price-check">✓</span> Monthly AI hiring update</div>
+        <div class="price-feature"><span class="price-check">✓</span> Community channels</div>
+        <div class="price-feature"><span class="price-check">✓</span> Peer resume feedback</div>
+        <a href="https://whop.com" class="price-btn">GET ACCESS →</a>
+      </div>
+      <div class="price-card pro">
+        <div class="price-badge">MOST VALUE</div>
+        <div class="price-name">Community + Coaching</div>
+        <div class="price-amount">$50</div>
+        <div class="price-period">/ month</div>
+        <div class="price-feature"><span class="price-check">✓</span> Everything in Community</div>
+        <div class="price-feature"><span class="price-check">✓</span> Monthly group coaching call</div>
+        <div class="price-feature"><span class="price-check">✓</span> Async resume review</div>
+        <div class="price-feature"><span class="price-check">✓</span> LinkedIn profile audit</div>
+        <div class="price-feature"><span class="price-check">✓</span> Direct founder Q&A access</div>
+        <div class="price-feature"><span class="price-check">✓</span> Priority 48hr feedback</div>
+        <a href="https://whop.com" class="price-btn">GET COACHING →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="social-proof" id="community">
+  <div class="sp-inner">
+    <div class="eyebrow">// member wins</div>
+    <h2 class="section-h">Real results.<br><span class="yellow">Real people.</span></h2>
+    <div class="testimonials">
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-quote">"Used the mock interviewer prompt 3 times before my Google interview. Got the offer. The feedback it gave was more direct than any prep course I've ever paid for."</div>
+        <div class="testi-name">Jordan T.</div>
+        <div class="testi-role">Software Engineer — landed at Google</div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-quote">"The negotiation script got me $14K more than the initial offer. I was terrified to negotiate. This made it feel like a conversation, not a confrontation."</div>
+        <div class="testi-name">Maya R.</div>
+        <div class="testi-role">Product Manager — $14K salary increase</div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-quote">"I went from zero callbacks to 4 interviews in 2 weeks after running the resume audit prompt. It found gaps I never would have caught myself."</div>
+        <div class="testi-name">Chris L.</div>
+        <div class="testi-role">Marketing Manager — 4 interviews in 2 weeks</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-section">
+  <div class="eyebrow" style="color:#26334A;justify-content:center;display:flex;margin-bottom:24px">// your move</div>
+  <h2 class="cta-h">Stop applying.<br>Start landing.</h2>
+  <p class="cta-sub">Join the community that's helping professionals decode the AI workplace.</p>
+  <a href="https://whop.com" class="cta-btn">GET ACCESS FOR $20/MO →</a>
+  <div class="cta-note">cancel anytime · keep your downloads · no fluff</div>
+</section>
+
+<footer>
+  <div>
+    <div class="footer-left">THE PROMPT</div>
+    <div class="footer-tag">Decode the AI Workplace.</div>
+  </div>
+  <div class="footer-right">© 2026 The Prompt. All rights reserved.</div>
+</footer>
+
+</body>
+</html>

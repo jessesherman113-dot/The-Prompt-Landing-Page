@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Prompt — Member Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700;800;900&family=Inter:wght@400;500&family=Fira+Code:wght@400&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0f1923;font-family:'Inter',sans-serif;color:#F9F6F0;min-height:100vh}
+
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:240px;background:#0a1018;border-right:1px solid rgba(255,204,0,0.1);display:flex;flex-direction:column;z-index:50}
+.sb-logo{padding:28px 24px;border-bottom:1px solid rgba(255,204,0,0.08)}
+.sb-logo-row{display:flex;align-items:center;gap:10px}
+.sb-circle{width:32px;height:32px;border-radius:50%;border:2px solid #FFCC00;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sb-wordmark{font-family:'Poppins',sans-serif;font-weight:800;font-size:13px;color:#F9F6F0;letter-spacing:2px}
+.sb-tag{font-family:'Fira Code',monospace;font-size:10px;color:#14B8A6;margin-top:6px;letter-spacing:1px}
+
+.sb-nav{flex:1;padding:16px 12px;overflow-y:auto}
+.sb-section-label{font-family:'Fira Code',monospace;font-size:10px;color:rgba(249,246,240,0.2);letter-spacing:2px;padding:16px 12px 8px;text-transform:uppercase}
+.sb-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;transition:background 0.15s;margin-bottom:2px;text-decoration:none;color:rgba(249,246,240,0.5);font-size:13px}
+.sb-item:hover{background:rgba(255,255,255,0.05);color:#F9F6F0}
+.sb-item.active{background:rgba(255,204,0,0.1);color:#FFCC00}
+.sb-icon{width:16px;height:16px;flex-shrink:0;opacity:0.6}
+.sb-item.active .sb-icon{opacity:1}
+.sb-item.active .sb-icon path,.sb-item.active .sb-icon rect,.sb-item.active .sb-icon circle{stroke:#FFCC00}
+
+.sb-bottom{padding:16px 12px;border-top:1px solid rgba(255,204,0,0.08)}
+.sb-member{display:flex;align-items:center;gap:10px;padding:10px 12px}
+.sb-avatar{width:32px;height:32px;border-radius:50%;background:rgba(255,204,0,0.15);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#FFCC00;flex-shrink:0}
+.sb-member-name{font-size:13px;color:#F9F6F0;font-weight:500}
+.sb-member-plan{font-size:11px;color:rgba(249,246,240,0.3);font-family:'Fira Code',monospace}
+
+.main{margin-left:240px;min-height:100vh}
+.topbar{padding:20px 40px;border-bottom:1px solid rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:space-between;background:#0f1923;position:sticky;top:0;z-index:40}
+.topbar-title{font-family:'Poppins',sans-serif;font-weight:800;font-size:20px;color:#F9F6F0;text-transform:uppercase;letter-spacing:0.5px}
+.topbar-right{display:flex;align-items:center;gap:16px}
+.new-badge{background:rgba(20,184,166,0.15);color:#14B8A6;font-family:'Fira Code',monospace;font-size:10px;padding:5px 12px;border-radius:20px;letter-spacing:1px}
+.week-label{font-family:'Fira Code',monospace;font-size:11px;color:rgba(249,246,240,0.3)}
+
+.content{padding:40px}
+.page{display:none}
+.page.active{display:block}
+
+.welcome-banner{background:linear-gradient(135deg,#1a2535 0%,#0f1923 100%);border:1px solid rgba(255,204,0,0.15);border-radius:16px;padding:36px 40px;margin-bottom:32px;display:flex;align-items:center;justify-content:space-between;position:relative;overflow:hidden}
+.wb-bg{position:absolute;right:40px;top:50%;transform:translateY(-50%);font-family:'Poppins',sans-serif;font-weight:900;font-size:120px;color:rgba(255,204,0,0.04);line-height:1;pointer-events:none}
+.wb-eyebrow{font-family:'Fira Code',monospace;font-size:11px;color:#14B8A6;letter-spacing:1px;margin-bottom:10px}
+.wb-title{font-family:'Poppins',sans-serif;font-weight:900;font-size:28px;color:#F9F6F0;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px}
+.wb-title span{color:#FFCC00}
+.wb-sub{font-size:14px;color:rgba(249,246,240,0.4);max-width:420px;line-height:1.6}
+.wb-action{background:#FFCC00;color:#26334A;font-family:'Poppins',sans-serif;font-weight:800;font-size:12px;letter-spacing:1px;padding:12px 24px;border-radius:8px;border:none;cursor:pointer;white-space:nowrap;transition:opacity 0.2s}
+.wb-action:hover{opacity:0.9}
+
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px}
+.stat-card{background:#1a2535;border-radius:12px;padding:20px 24px;border:1px solid rgba(255,255,255,0.04)}
+.stat-label{font-family:'Fira Code',monospace;font-size:10px;color:rgba(249,246,240,0.3);letter-spacing:1px;margin-bottom:8px}
+.stat-val{font-family:'Poppins',sans-serif;font-weight:900;font-size:32px;color:#F9F6F0;line-height:1}
+.stat-val.yellow{color:#FFCC00}
+.stat-val.teal{color:#14B8A6}
+.stat-sub{font-size:12px;color:rgba(249,246,240,0.25);margin-top:4px}
+
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:32px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px}
+
+.card{background:#1a2535;border-radius:12px;border:1px solid rgba(255,255,255,0.04);overflow:hidden}
+.card-header{padding:20px 24px;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;align-items:center;justify-content:space-between}
+.card-title{font-family:'Poppins',sans-serif;font-weight:800;font-size:13px;color:#F9F6F0;text-transform:uppercase;letter-spacing:1px}
+.card-badge{font-family:'Fira Code',monospace;font-size:10px;padding:3px 10px;border-radius:20px}
+.badge-yellow{background:rgba(255,204,0,0.15);color:#FFCC00}
+.badge-teal{background:rgba(20,184,166,0.15);color:#14B8A6}
+.badge-new{background:#14B8A6;color:#0a1018}
+.card-body{padding:24px}
+
+.tip-of-week{border-left:3px solid #FFCC00;padding:0 0 0 20px}
+.tow-label{font-family:'Fira Code',monospace;font-size:10px;color:#FFCC00;letter-spacing:1px;margin-bottom:10px}
+.tow-title{font-family:'Poppins',sans-serif;font-weight:800;font-size:16px;color:#F9F6F0;margin-bottom:10px}
+.tow-body{font-size:13px;color:rgba(249,246,240,0.5);line-height:1.7;margin-bottom:16px}
+.tow-prompt{font-family:'Fira Code',monospace;font-size:12px;color:#14B8A6;background:rgba(20,184,166,0.06);border:1px solid rgba(20,184,166,0.15);border-radius:8px;padding:14px;line-height:1.7}
+
+.resource-list{}
+.resource-item{display:flex;align-items:center;gap:16px;padding:14px 0;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;transition:opacity 0.15s}
+.resource-item:last-child{border-bottom:none}
+.resource-item:hover{opacity:0.8}
+.ri-icon{width:40px;height:40px;border-radius:8px;background:rgba(255,204,0,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ri-info{flex:1}
+.ri-name{font-size:13px;font-weight:500;color:#F9F6F0;margin-bottom:2px}
+.ri-desc{font-size:12px;color:rgba(249,246,240,0.3)}
+.ri-arrow{color:rgba(249,246,240,0.2);font-size:16px}
+.ri-badge{font-family:'Fira Code',monospace;font-size:10px;padding:3px 8px;border-radius:4px;background:rgba(20,184,166,0.15);color:#14B8A6}
+
+.prompt-category{margin-bottom:28px}
+.pc-label{font-family:'Fira Code',monospace;font-size:11px;color:#FFCC00;letter-spacing:1px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.pc-label::after{content:'';flex:1;height:1px;background:rgba(255,204,0,0.1)}
+.prompt-item{background:#0f1923;border-radius:8px;border:1px solid rgba(255,255,255,0.06);padding:16px;margin-bottom:8px}
+.pi-name{font-size:13px;font-weight:500;color:#F9F6F0;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between}
+.pi-badge{font-family:'Fira Code',monospace;font-size:10px;padding:2px 8px;border-radius:4px}
+.pi-text{font-family:'Fira Code',monospace;font-size:11.5px;color:#14B8A6;line-height:1.7;margin-top:10px;background:rgba(20,184,166,0.04);border-left:2px solid rgba(20,184,166,0.3);padding:10px 12px;border-radius:0 6px 6px 0}
+.copy-btn{background:rgba(255,204,0,0.1);color:#FFCC00;border:1px solid rgba(255,204,0,0.2);font-family:'Fira Code',monospace;font-size:10px;padding:4px 10px;border-radius:4px;cursor:pointer;transition:background 0.15s;letter-spacing:0.5px}
+.copy-btn:hover{background:rgba(255,204,0,0.2)}
+.copy-btn.copied{background:rgba(20,184,166,0.2);color:#14B8A6;border-color:rgba(20,184,166,0.3)}
+
+.signal-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.signal-item{background:#0f1923;border-radius:8px;padding:16px;border:1px solid rgba(255,255,255,0.04)}
+.si-tag{font-family:'Fira Code',monospace;font-size:10px;padding:3px 8px;border-radius:4px;display:inline-block;margin-bottom:8px}
+.si-title{font-size:13px;font-weight:500;color:#F9F6F0;margin-bottom:6px}
+.si-body{font-size:12px;color:rgba(249,246,240,0.4);line-height:1.6}
+
+.role-item{display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+.role-item:last-child{border-bottom:none}
+.role-rank{font-family:'Poppins',sans-serif;font-weight:900;font-size:20px;color:rgba(255,204,0,0.2);min-width:32px}
+.role-info{flex:1}
+.role-title-text{font-size:13px;font-weight:500;color:#F9F6F0}
+.role-salary{font-size:11px;color:rgba(249,246,240,0.3);font-family:'Fira Code',monospace;margin-top:2px}
+.role-trend-text{font-family:'Fira Code',monospace;font-size:10px;padding:3px 8px;border-radius:4px}
+
+.action-list{}
+.action-item-row{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+.action-item-row:last-child{border-bottom:none}
+.ai-num{font-family:'Fira Code',monospace;font-size:11px;color:#14B8A6;background:rgba(20,184,166,0.1);padding:3px 8px;border-radius:4px;flex-shrink:0;margin-top:1px}
+.ai-text{font-size:13px;color:rgba(249,246,240,0.6);line-height:1.5}
+.ai-text strong{color:#F9F6F0}
+
+@media(max-width:900px){
+  .sidebar{display:none}
+  .main{margin-left:0}
+  .stats-row{grid-template-columns:1fr 1fr}
+  .grid-2,.grid-3{grid-template-columns:1fr}
+  .signal-grid{grid-template-columns:1fr}
+  .content{padding:20px}
+  .topbar{padding:16px 20px}
+}
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-row">
+      <div class="sb-circle">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M2 1.5L11.5 7L7 8.5L5 13L2 1.5Z" fill="#FFCC00"/>
+        </svg>
+      </div>
+      <div class="sb-wordmark">THE PROMPT</div>
+    </div>
+    <div class="sb-tag">// member dashboard</div>
+  </div>
+
+  <div class="sb-nav">
+    <div class="sb-section-label">navigate</div>
+    <a class="sb-item active" onclick="showPage('home',this)">
+      <svg class="sb-icon" viewBox="0 0 16 16" fill="none"><path d="M2 6L8 2L14 6V14H10V10H6V14H2V6Z" stroke="#FFCC00" stroke-width="1.2"/></svg>
+      Home
+    </a>
+    <a class="sb-item" onclick="showPage('prompts',this)">
+      <svg class="sb-icon" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" stroke="rgba(249,246,240,0.5)" stroke-width="1.2"/><path d="M5 6h6M5 9h4" stroke="rgba(249,246,240,0.5)" stroke-width="1.2" stroke-linecap="round"/></svg>
+      Prompt Library
+    </a>
+    <a class="sb-item" onclick="showPage('resources',this)">
+      <svg class="sb-icon" viewBox="0 0 16 16" fill="none"><path d="M3 2h7l3 3v9H3V2Z" stroke="rgba(249,246,240,0.5)" stroke-width="1.2"/><path d="M10 2v3h3" stroke="rgba(249,246,240,0.5)" stroke-width="1.2"/></svg>
+      Resources
+    </a>
+    <a class="sb-item" onclick="showPage('market',this)">
+      <svg class="sb-icon" viewBox="0 0 16 16" fill="none"><path d="M2 12L6 7L9 10L13 4" stroke="rgba(249,246,240,0.5)" stroke-width="1.2" stroke-linecap="round"/></svg>
+      Market Intel
+    </a>
+    <a class="sb-item" onclick="showPage('tools',this)">
+      <svg class="sb-icon" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="rgba(249,246,240,0.5)" stroke-width="1.2"/><circle cx="8" cy="8" r="2" stroke="rgba(249,246,240,0.5)" stroke-width="1.2"/></svg>
+      AI Tools Guide
+    </a>
+
+    <div class="sb-section-label">community</div>
+    <a class="sb-item" href="https://whop.com" target="_blank">
+      <svg class="sb-icon" viewBox="0 0 16 16" fill="none"><path d="M14 10c0 1.1-.9 2-2 2H5l-3 2V4c0-1.1.9-2 2-2h8c1.1 0 2 .9 2 2v6Z" stroke="rgba(249,246,240,0.5)" stroke-width="1.2"/></svg>
+      Community Chat
+    </a>
+  </div>
+
+  <div class="sb-bottom">
+    <div class="sb-member">
+      <div class="sb-avatar">M</div>
+      <div>
+        <div class="sb-member-name">Member</div>
+        <div class="sb-member-plan">community_access</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="page-title">Dashboard</div>
+    <div class="topbar-right">
+      <span class="new-badge">NEW THIS WEEK</span>
+      <span class="week-label">APR 2026 // WK_02</span>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <div class="page active" id="page-home">
+      <div class="welcome-banner">
+        <div class="wb-bg">GO</div>
+        <div>
+          <div class="wb-eyebrow">// welcome back</div>
+          <div class="wb-title">Ready to <span>decode</span><br>this week?</div>
+          <div class="wb-sub">New tip dropped Monday. Market update live. 3 new prompts added to the library.</div>
+        </div>
+        <button class="wb-action" onclick="showPage('prompts',null)">OPEN PROMPT LIBRARY →</button>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-label">PROMPTS AVAILABLE</div>
+          <div class="stat-val yellow">30+</div>
+          <div class="stat-sub">across 5 job search stages</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">RESOURCES</div>
+          <div class="stat-val">7</div>
+          <div class="stat-sub">downloadable files</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">INTERVIEW Q&As</div>
+          <div class="stat-val teal">50</div>
+          <div class="stat-sub">model answers included</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">UPDATED</div>
+          <div class="stat-val" style="font-size:20px;margin-top:4px">APR '26</div>
+          <div class="stat-sub">next update May 1st</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">This Week's Tip</div>
+            <div class="card-badge badge-new">NEW</div>
+          </div>
+          <div class="card-body">
+            <div class="tip-of-week">
+              <div class="tow-label">// WEEK 02 // MONDAY DROP</div>
+              <div class="tow-title">Chain-of-Thought for Interview Prep</div>
+              <div class="tow-body">Don't just practice interview answers — understand why strong answers work. This prompt forces the AI to show its reasoning before giving you the model answer.</div>
+              <div class="tow-prompt">"Think step by step. I'm prepping for [role]. Question: '[question]'. Before answering: (1) What is the interviewer actually evaluating? (2) What does a weak answer look like? Then give me a strong STAR answer using my background: [your context]."</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Quick Start Resources</div>
+            <div class="card-badge badge-yellow">7 FILES</div>
+          </div>
+          <div class="card-body">
+            <div class="resource-list">
+              <div class="resource-item" onclick="showPage('resources',null)">
+                <div class="ri-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="2" width="14" height="14" rx="2" stroke="#FFCC00" stroke-width="1.3"/><path d="M5 7h8M5 10h5" stroke="#FFCC00" stroke-width="1.3" stroke-linecap="round"/></svg></div>
+                <div class="ri-info"><div class="ri-name">AI Interview Question Bank</div><div class="ri-desc">50 Q&As with model answers</div></div>
+                <div class="ri-arrow">›</div>
+              </div>
+              <div class="resource-item" onclick="showPage('resources',null)">
+                <div class="ri-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 2h9l4 4v10H3V2Z" stroke="#FFCC00" stroke-width="1.3"/><path d="M12 2v4h4" stroke="#FFCC00" stroke-width="1.3"/></svg></div>
+                <div class="ri-info"><div class="ri-name">Resume Template</div><div class="ri-desc">ATS-optimized with AI tips</div></div>
+                <div class="ri-arrow">›</div>
+              </div>
+              <div class="resource-item" onclick="showPage('resources',null)">
+                <div class="ri-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="6" stroke="#FFCC00" stroke-width="1.3"/><path d="M9 6v3l2 2" stroke="#FFCC00" stroke-width="1.3" stroke-linecap="round"/></svg></div>
+                <div class="ri-info"><div class="ri-name">Negotiation Script</div><div class="ri-desc">Email + verbal templates</div></div>
+                <div class="ri-badge">POPULAR</div>
+              </div>
+              <div class="resource-item" onclick="showPage('resources',null)">
+                <div class="ri-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2L11 7H16L12 10.5L13.5 16L9 13L4.5 16L6 10.5L2 7H7L9 2Z" stroke="#FFCC00" stroke-width="1.3"/></svg></div>
+                <div class="ri-info"><div class="ri-name">30-Day Prompt Pack + More</div><div class="ri-desc">4 more downloads available</div></div>
+                <div class="ri-arrow">›</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page" id="page-prompts">
+      <div class="prompt-category">
+        <div class="pc-label">01 // RESUME & APPLICATIONS</div>
+        <div class="prompt-item">
+          <div class="pi-name">Full Resume Audit <span class="pi-badge badge-yellow">ESSENTIAL</span></div>
+          <div class="pi-text" id="p1">"Act as a senior recruiter. Review my resume for [target role]. Flag weak verbs, missing metrics, and ATS keywords. Return a prioritized list of fixes ordered by impact. Be direct."
+
+[Paste your resume]</div>
+          <div style="margin-top:10px"><button class="copy-btn" onclick="copyPrompt('p1',this)">COPY</button></div>
+        </div>
+        <div class="prompt-item">
+          <div class="pi-name">Bullet Transformer <span class="pi-badge badge-yellow">ESSENTIAL</span></div>
+          <div class="pi-text" id="p2">"Rewrite this bullet using the STAR framework with a strong verb and quantified impact. Keep under 20 words. Give 2 versions — conservative and bold.
+
+Original: [your bullet]"</div>
+          <div style="margin-top:10px"><button class="copy-btn" onclick="copyPrompt('p2',this)">COPY</button></div>
+        </div>
+        <div class="prompt-item">
+          <div class="pi-name">Job Description Decoder <span class="pi-badge badge-teal">TARGETING</span></div>
+          <div class="pi-text" id="p3">"Analyze this JD. Return: (1) must-have skills, (2) nice-to-haves, (3) red flags, (4) core problem this role solves, (5) top 3 ATS keywords I need.
+
+[Paste JD]"</div>
+          <div style="margin-top:10px"><button class="copy-btn" onclick="copyPrompt('p3',this)">COPY</button></div>
+        </div>
+        <div class="prompt-item">
+          <div class="pi-name">Tailored Cover Letter <span class="pi-badge badge-teal">TARGETING</span></div>
+          <div class="pi-text" id="p4">"Write a 3-paragraph cover letter for [role] at [company]. My background: [summary]. Match to: [key JD requirements]. Open with a hook, not 'I am applying.' Tone: direct, confident, human."</div>
+          <div style="margin-top:10px"><button class="copy-btn" onclick="copyPrompt('p4',this)">COPY</button></div>
+        </div>
+      </div>
+
+      <div class="prompt-category">
+        <div class="pc-label">02 // LINKEDIN & PERSONAL BRAND</div>
+        <div class="prompt-item">
+          <div class="pi-name">LinkedIn Headline Generator <span class="pi-badge badge-yellow">ESSENTIAL</span></div>
+          <div class="pi-text" id="p5">"Generate 5 LinkedIn headlines for me. I am a [background] targeting [role] in [industry]. Top skills: [list 3]. Formula: [Role] | [Specialty] | [Value]. Make each distinct."</div>
+          <div style="margin-top:10px"><button class="copy-btn" onclick="copyPrompt('p5',this)">COPY</button></div>
+        </div>
+        <div class="prompt-item">
+          <div class="pi-name">Personal Brand Statement <span class="pi-badge badge-teal">BRAND</span></div>
+          <div class="pi-text" id="p6">"Write my personal brand statement. I help [audience] who struggle with [challenge] using [skill 1] and [skill 2] to deliver [outcome]. Give 3 versions: LinkedIn, verbal intro, email signature."</div>
+          <div style="margin-top:10px"><button class="copy-btn" onclick="copyPrompt('p6',this)">COPY</button></div>
+        </div>
+      </div>
+
+      <div class="prompt-category">
+        <div class="pc-label">03 // INTERVIEW PREPARATION</div>
+        <div class="prompt-item">
+          <div class="pi-name">Mock Interviewer <span class="pi-badge badge-yellow">ESSENTIAL</span></div>
+          <div class="pi-text" id="p7">"You are a tough senior interviewer for [role]. Ask me 5 behavioral questions one at a time. After each answer, give critical specific feedback. Do not give all 5 at once. Start with question 1."</div>
+          <div style="margin-top:10px"><button class="copy-btn" onclick="copyPrompt('p7',this)">COPY</button></div>
+        </div>
+        <div class="prompt-item">
+          <div class="pi-name">STAR Story Bank <span class="pi-badge badge-yellow">ESSENTIAL</span></div>
+          <div class="pi-text" id="p8">"Generate 6 STAR interview stories from my background covering: leadership, conflict, failure, impact, change, collaboration. Each under 200 words with a specific result.
+
+My background: [3-5 sentences]"</div>
+          <div style="margin-top:10px"><button class="copy-btn" onclick="copyPrompt('p8',this)">COPY</button></div>
+        </div>
+        <div class="prompt-item">
+          <div class="pi-name">Chain-of-Thought Prep <span class="pi-badge badge-new">NEW</span></div>
+          <div class="pi-text" id="p9">"Think step by step. I'm prepping for [role]. Question: '[question]'. First: (1) what is the interviewer evaluating, (2) what does a weak answer look like. Then give a strong STAR answer using: [your background]."</div>
+          <div style="margin-top:10px"><button class="copy-btn" onclick="copyPrompt('p9',this)">COPY</button></div>
+        </div>
+      </div>
+
+      <div class="prompt-category">
+        <div class="pc-label">04 // OFFER & NEGOTIATION</div>
+        <div class="prompt-item">
+          <div class="pi-name">Market Rate Research <span class="pi-badge badge-yellow">ESSENTIAL</span></div>
+          <div class="pi-text" id="p10">"I'm negotiating salary for [role] in [city] with [X] years experience. Give me: (1) realistic 2026 comp range with base/bonus/equity, (2) what pushes to top of range, (3) data sources to check, (4) one-sentence opening to anchor my number."</div>
+          <div style="margin-top:10px"><button class="copy-btn" onclick="copyPrompt('p10',this)">COPY</button></div>
+        </div>
+        <div class="prompt-item">
+          <div class="pi-name">Counter-Offer Email <span class="pi-badge badge-yellow">ESSENTIAL</span></div>
+          <div class="pi-text" id="p11">"Write a counter-offer email. Role: [role]. Offered: $[X]. Target: $[Y]. Justification: [market rate/experience]. Open with enthusiasm, state ask clearly, leave room for other components, close warmly."</div>
+          <div style="margin-top:10px"><button class="copy-btn" onclick="copyPrompt('p11',this)">COPY</button></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page" id="page-resources">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Your Downloads</div>
+            <div class="card-badge badge-yellow">7 RESOURCES</div>
+          </div>
+          <div class="card-body">
+            <div class="resource-list">
+              <div class="resource-item"><div class="ri-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="2" width="14" height="14" rx="2" stroke="#FFCC00" stroke-width="1.3"/><path d="M5 7h8M5 10h5" stroke="#FFCC00" stroke-width="1.3" stroke-linecap="round"/></svg></div><div class="ri-info"><div class="ri-name">AI Interview Question Bank 2026</div><div class="ri-desc">50 Q&As · 5 domains · model answers</div></div><div class="ri-badge">PDF</div></div>
+              <div class="resource-item"><div class="ri-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 2h9l4 4v10H3V2Z" stroke="#FFCC00" stroke-width="1.3"/><path d="M12 2v4h4" stroke="#FFCC00" stroke-width="1.3"/></svg></div><div class="ri-info"><div class="ri-name">AI-Optimized Resume Template</div><div class="ri-desc">ATS-ready · embedded AI tips</div></div><div class="ri-badge">PDF</div></div>
+              <div class="resource-item"><div class="ri-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="6" stroke="#FFCC00" stroke-width="1.3"/><path d="M6 9l2 2 4-4" stroke="#FFCC00" stroke-width="1.3" stroke-linecap="round"/></svg></div><div class="ri-info"><div class="ri-name">30-Day Job Search Prompt Pack</div><div class="ri-desc">10 prompts · 4 weeks · full search</div></div><div class="ri-badge">PDF</div></div>
+              <div class="resource-item"><div class="ri-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2L11 7H16L12 10.5L13.5 16L9 13L4.5 16L6 10.5L2 7H7L9 2Z" stroke="#FFCC00" stroke-width="1.3"/></svg></div><div class="ri-info"><div class="ri-name">LinkedIn Profile Blueprint</div><div class="ri-desc">Section-by-section · new grad edition</div></div><div class="ri-badge">PDF</div></div>
+              <div class="resource-item"><div class="ri-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M14 8c0 3.3-5 8-5 8S4 11.3 4 8a5 5 0 0110 0Z" stroke="#FFCC00" stroke-width="1.3"/><circle cx="9" cy="8" r="2" stroke="#FFCC00" stroke-width="1.3"/></svg></div><div class="ri-info"><div class="ri-name">Job Offer Negotiation Script</div><div class="ri-desc">Email + verbal · phone-ready</div></div><div class="ri-badge">PDF</div></div>
+              <div class="resource-item"><div class="ri-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="5" width="14" height="10" rx="2" stroke="#FFCC00" stroke-width="1.3"/><path d="M6 5V4a3 3 0 016 0v1" stroke="#FFCC00" stroke-width="1.3"/></svg></div><div class="ri-info"><div class="ri-name">Personal Brand Statement Generator</div><div class="ri-desc">Worksheet · fill-in template</div></div><div class="ri-badge">PDF</div></div>
+              <div class="resource-item"><div class="ri-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M2 14L6 8l3 3 4-6 3 5" stroke="#14B8A6" stroke-width="1.3" stroke-linecap="round"/></svg></div><div class="ri-info"><div class="ri-name">Master Prompt Library</div><div class="ri-desc">30+ prompts · all stages</div></div><div class="ri-badge" style="background:rgba(20,184,166,0.15);color:#14B8A6">NEW</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">How To Use These</div>
+            <div class="card-badge badge-teal">GUIDE</div>
+          </div>
+          <div class="card-body">
+            <div style="font-size:13px;color:rgba(249,246,240,0.5);line-height:1.8">
+              <p style="margin-bottom:16px">These resources are designed to work together as a complete job search system.</p>
+              <div class="action-list">
+                <div class="action-item-row"><div class="ai-num">WEEK 1</div><div class="ai-text"><strong>Run the Resume Audit prompt</strong> on your current resume. Download the Resume Template to rebuild.</div></div>
+                <div class="action-item-row"><div class="ai-num">WEEK 2</div><div class="ai-text"><strong>Use the LinkedIn Blueprint</strong> to rebuild your profile. Run the Brand Statement Generator.</div></div>
+                <div class="action-item-row"><div class="ai-num">WEEK 3</div><div class="ai-text"><strong>Run the Mock Interviewer</strong> 3x with the Interview Question Bank as your study guide.</div></div>
+                <div class="action-item-row"><div class="ai-num">OFFER</div><div class="ai-text"><strong>Use the Negotiation Script</strong> with the Market Rate Research prompt before every call.</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page" id="page-market">
+      <div class="card" style="margin-bottom:24px">
+        <div class="card-header">
+          <div class="card-title">April 2026 — AI Hiring Signals</div>
+          <div class="card-badge badge-new">MONTHLY UPDATE</div>
+        </div>
+        <div class="card-body">
+          <div class="signal-grid">
+            <div class="signal-item"><div class="si-tag badge-teal">↑ TRENDING</div><div class="si-title">AI-Adjacent Roles Surging</div><div class="si-body">Roles requiring AI fluency but not pure AI engineering are the fastest-growing segment. Doers who use AI, not just builders.</div></div>
+            <div class="signal-item"><div class="si-tag badge-yellow">SHIFT</div><div class="si-title">Prompt Skills Are Table Stakes</div><div class="si-body">Hiring managers now filter for practical AI fluency in early rounds across all knowledge worker roles — not just tech.</div></div>
+            <div class="signal-item"><div class="si-tag" style="background:rgba(249,246,240,0.06);color:rgba(249,246,240,0.4)">WATCH</div><div class="si-title">Generic AI Titles Cooling</div><div class="si-body">Pure "AI Strategist" roles thinning. Companies want domain experts who also lead AI — finance AI leads, healthcare AI PMs.</div></div>
+            <div class="signal-item"><div class="si-tag badge-teal">STABLE</div><div class="si-title">Remote AI Roles Holding</div><div class="si-body">AI-focused roles continue to resist RTO. Non-technical AI-adjacent roles are trending toward hybrid.</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header"><div class="card-title">Hot Roles This Month</div><div class="card-badge badge-yellow">TOP 5</div></div>
+          <div class="card-body">
+            <div class="role-item"><div class="role-rank">01</div><div class="role-info"><div class="role-title-text">AI Product Manager</div><div class="role-salary">$140K–$220K</div></div><div class="role-trend-text badge-new">HOT</div></div>
+            <div class="role-item"><div class="role-rank">02</div><div class="role-info"><div class="role-title-text">AI-Enabled Marketing Manager</div><div class="role-salary">$85K–$140K</div></div><div class="role-trend-text badge-teal">↑ GROWING</div></div>
+            <div class="role-item"><div class="role-rank">03</div><div class="role-info"><div class="role-title-text">Prompt Engineer</div><div class="role-salary">$90K–$160K</div></div><div class="role-trend-text badge-new">HOT</div></div>
+            <div class="role-item"><div class="role-rank">04</div><div class="role-info"><div class="role-title-text">AI Operations Analyst</div><div class="role-salary">$80K–$130K</div></div><div class="role-trend-text badge-teal">↑ EMERGING</div></div>
+            <div class="role-item"><div class="role-rank">05</div><div class="role-info"><div class="role-title-text">AI Ethics & Governance Lead</div><div class="role-salary">$120K–$200K</div></div><div class="role-trend-text badge-teal">↑ POLICY</div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Your Action Items</div><div class="card-badge badge-teal">THIS MONTH</div></div>
+          <div class="card-body">
+            <div class="action-list">
+              <div class="action-item-row"><div class="ai-num">01</div><div class="ai-text"><strong>Update LinkedIn skills</strong> — add Agentic AI Workflows and AI ROI Measurement if genuine.</div></div>
+              <div class="action-item-row"><div class="ai-num">02</div><div class="ai-text"><strong>Add an AI bullet to every role</strong> on your resume. If you used any tool, document it with a result.</div></div>
+              <div class="action-item-row"><div class="ai-num">03</div><div class="ai-text"><strong>Run the Interview Bank</strong> on 10+ questions. AI questions now appear in first-round interviews.</div></div>
+              <div class="action-item-row"><div class="ai-num">04</div><div class="ai-text"><strong>Search AI-adjacent titles</strong> — familiar roles at AI-forward companies often move faster than title changes.</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page" id="page-tools">
+      <div class="card" style="margin-bottom:24px">
+        <div class="card-header"><div class="card-title">AI Tools Directory 2026</div><div class="card-badge badge-yellow">QUARTERLY UPDATE</div></div>
+        <div class="card-body">
+          <div style="font-size:13px;color:rgba(249,246,240,0.4);margin-bottom:20px;font-family:'Fira Code',monospace">// golden rule: the best tools are embedded in workflows you already use</div>
+          <div class="grid-3" style="margin-bottom:0">
+            <div class="signal-item"><div class="si-tag badge-new">OUR PICK</div><div class="si-title">Claude (Anthropic)</div><div class="si-body">Best for long documents, nuanced writing, analysis, and complex instructions. Start here for job search tasks.</div></div>
+            <div class="signal-item"><div class="si-tag badge-teal">POPULAR</div><div class="si-title">ChatGPT (OpenAI)</div><div class="si-body">Strong for code, data analysis with Code Interpreter, and image generation. Best plugin ecosystem.</div></div>
+            <div class="signal-item"><div class="si-tag badge-teal">FREE</div><div class="si-title">NotebookLM</div><div class="si-body">Upload docs and interrogate them with AI. Game-changer for company research before interviews. 100% free.</div></div>
+            <div class="signal-item"><div class="si-tag badge-yellow">JOB SEARCH</div><div class="si-title">Perplexity AI</div><div class="si-body">AI search with real-time web access. Better than Google for research tasks requiring multiple sources.</div></div>
+            <div class="signal-item"><div class="si-tag badge-teal">TRACKING</div><div class="si-title">Teal HQ</div><div class="si-body">Application tracker + ATS resume builder. Auto-matches resume keywords to job descriptions.</div></div>
+            <div class="signal-item"><div class="si-tag" style="background:rgba(249,246,240,0.06);color:rgba(249,246,240,0.4)">WRITING</div><div class="si-title">Grammarly AI</div><div class="si-body">Works everywhere in your browser. Grammar, tone, and clarity fixes inline — lowest friction tool available.</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function showPage(id, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('active'));
+  if (el) el.classList.add('active');
+  const titles = {home:'Dashboard',prompts:'Prompt Library',resources:'Resources',market:'Market Intel',tools:'AI Tools Guide'};
+  document.getElementById('page-title').textContent = titles[id] || 'Dashboard';
+}
+
+function copyPrompt(id, btn) {
+  const text = document.getElementById(id).textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'COPIED!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'COPY'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+</script>
+</body>
+</html>
